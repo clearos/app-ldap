@@ -4,7 +4,7 @@
 // General information
 /////////////////////////////////////////////////////////////////////////////
 
-$app['basename'] = 'ldap_manager';
+$app['basename'] = 'ldap';
 $app['version'] = '5.9.9.0';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
@@ -18,7 +18,7 @@ $app['description'] = 'The LDAP mode manager... master/slave/standalone.'; // FI
 // App name and categories
 /////////////////////////////////////////////////////////////////////////////
 
-$app['name'] = lang('ldap_manager_ldap_manager');
+$app['name'] = 'Mode'; // FIXME
 $app['category'] = lang('base_category_system');
 $app['subcategory'] = lang('base_subcategory_settings');
 
