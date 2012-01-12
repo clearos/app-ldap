@@ -32,6 +32,7 @@ $app['core_requires'] = array(
     'app-mode-core',
     'openssl',
     'system-ldap-driver', 
+    'webconfig-php-ldap',
 );
 
 $app['core_directory_manifest'] = array(

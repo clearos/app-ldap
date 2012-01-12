@@ -17,6 +17,7 @@ Requires: app-base-core
 Requires: app-mode-core
 Requires: openssl
 Requires: system-ldap-driver
+Requires: webconfig-php-ldap
 
 %description core
 The LDAP Engine provides a common framework for all the available LDAP implementations including OpenLDAP and Active Directory.
