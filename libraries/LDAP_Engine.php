@@ -53,8 +53,10 @@ clearos_load_language('ldap');
 ///////////////////////////////////////////////////////////////////////////////
 
 use \clearos\apps\base\Daemon as Daemon;
+use \clearos\apps\base\File as File;
 
 clearos_load_library('base/Daemon');
+clearos_load_library('base/File');
 
 ///////////////////////////////////////////////////////////////////////////////
 // C L A S S
@@ -89,6 +91,7 @@ class LDAP_Engine extends Daemon
     const STATUS_BUSY = 'busy';
 
     const PATH_SYNCHRONIZE = '/var/clearos/ldap/synchronize';
+    const FILE_INITIALIZED = '/var/clearos/ldap/initialized';
 
     ///////////////////////////////////////////////////////////////////////////////
     // V A R I A B L E S
@@ -117,5 +120,39 @@ class LDAP_Engine extends Daemon
         );
 
         parent::__construct($daemon);
+    }
+
+    /**
+     * Returns state of LDAP setup.
+     *
+     * @return boolean TRUE if LDAP has been initialized
+     */
+
+    public function is_initialized()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_INITIALIZED);
+
+        if ($file->exists())
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    /**
+     * Sets LDAP initialized flag.
+     *
+     * @throws Engine_Exception
+     */
+
+    protected function _set_initialized()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $file = new File(self::FILE_INITIALIZED);
+
+        if (! $file->exists())
+            $file->create('root', 'root', '0644');
     }
 }
