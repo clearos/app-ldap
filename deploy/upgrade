@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# TODO: beta only upgrade.  Remove after final.
+if [ -e /var/clearos/openldap/initialized.php ]; then
+    mv /var/clearos/openldap/initialized.php /var/clearos/ldap/initialized
+fi
