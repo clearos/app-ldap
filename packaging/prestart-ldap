@@ -2,3 +2,7 @@
 
 # Initialize LDAP
 [ -x /usr/sbin/ldap-synchronize ] && /usr/sbin/ldap-synchronize >/dev/null 2>&1
+
+# Initialize Samba if it has enough info to do so
+[ -x /usr/sbin/samba-init ] && /usr/sbin/samba-init >/dev/null 2>&1
+
