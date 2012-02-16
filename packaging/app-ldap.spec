@@ -1,13 +1,14 @@
 
 Name: app-ldap
 Epoch: 1
-Version: 1.0.2
+Version: 1.0.4
 Release: 1%{dist}
 Summary: LDAP Engine - APIs and install
 License: LGPLv3
 Group: ClearOS/Libraries
 Source: app-ldap-%{version}.tar.gz
 Buildarch: noarch
+
 %description
 The LDAP Engine provides a common framework for all the available LDAP implementations including OpenLDAP and Active Directory.
 
