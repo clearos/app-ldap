@@ -1,7 +1,7 @@
 
 Name: app-ldap
 Epoch: 1
-Version: 1.0.4
+Version: 1.0.8
 Release: 1%{dist}
 Summary: LDAP Engine - APIs and install
 License: LGPLv3
@@ -37,6 +37,7 @@ install -d -m 0755 %{buildroot}/var/clearos/ldap
 install -d -m 0755 %{buildroot}/var/clearos/ldap/synchronize
 install -D -m 0755 packaging/ldap-init %{buildroot}/usr/sbin/ldap-init
 install -D -m 0755 packaging/ldap-synchronize %{buildroot}/usr/sbin/ldap-synchronize
+install -D -m 0644 packaging/nslcd.php %{buildroot}/var/clearos/base/daemon/nslcd.php
 install -D -m 0755 packaging/poststart-ldap %{buildroot}/usr/sbin/poststart-ldap
 install -D -m 0755 packaging/prestart-ldap %{buildroot}/usr/sbin/prestart-ldap
 
@@ -71,5 +72,6 @@ exit 0
 /usr/clearos/apps/ldap/libraries
 /usr/sbin/ldap-init
 /usr/sbin/ldap-synchronize
+/var/clearos/base/daemon/nslcd.php
 /usr/sbin/poststart-ldap
 /usr/sbin/prestart-ldap

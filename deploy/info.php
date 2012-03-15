@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'ldap';
-$app['version'] = '1.0.4';
+$app['version'] = '1.0.8';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -41,19 +41,20 @@ $app['core_directory_manifest'] = array(
 );
 
 $app['core_file_manifest'] = array(
-   'prestart-ldap' => array(
+    'nslcd.php'=> array('target' => '/var/clearos/base/daemon/nslcd.php'),
+    'prestart-ldap' => array(
         'target' => '/usr/sbin/prestart-ldap',
         'mode' => '0755',
     ),
-   'poststart-ldap' => array(
+    'poststart-ldap' => array(
         'target' => '/usr/sbin/poststart-ldap',
         'mode' => '0755',
     ),
-   'ldap-init' => array(
+    'ldap-init' => array(
         'target' => '/usr/sbin/ldap-init',
         'mode' => '0755',
     ),
-   'ldap-synchronize' => array(
+    'ldap-synchronize' => array(
         'target' => '/usr/sbin/ldap-synchronize',
         'mode' => '0755',
     ),
