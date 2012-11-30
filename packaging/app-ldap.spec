@@ -1,7 +1,7 @@
 
 Name: app-ldap
 Epoch: 1
-Version: 1.4.5
+Version: 1.4.7
 Release: 1%{dist}
 Summary: LDAP Engine - Core
 License: LGPLv3
