@@ -651,7 +651,7 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $this->connection = ldap_connect($this->config['bind_host']);
+        $this->connection = ldap_connect('ldaps://' . $this->config['bind_host']);
 
         if (! ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3))
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
