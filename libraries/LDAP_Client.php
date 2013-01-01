@@ -92,10 +92,13 @@ class LDAP_Client extends Daemon
     // V A R I A B L E S
     ///////////////////////////////////////////////////////////////////////////////
 
-    protected $bound = FALSE;
-    protected $connection = NULL;
+    protected $bound_read = FALSE;
+    protected $bound_write = FALSE;
+    protected $read_config = NULL;
+    protected $read_connection = NULL;
+    protected $write_config = NULL;
+    protected $write_connection = NULL;
     protected $search_result = FALSE;
-    protected $config = NULL;
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -110,14 +113,19 @@ class LDAP_Client extends Daemon
      * @param string $bind_host Bind host
      */
 
-    public function __construct($base_dn, $bind_dn, $bind_pw, $bind_host = 'localhost')
+    public function __construct($read_config, $write_config)
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $this->config['base_dn'] = $base_dn;
-        $this->config['bind_dn'] = $bind_dn;
-        $this->config['bind_pw'] = $bind_pw;
-        $this->config['bind_host'] = $bind_host;
+        $this->read_config['base_dn'] = $read_config['base_dn'];
+        $this->read_config['bind_dn'] = $read_config['bind_dn'];
+        $this->read_config['bind_pw'] = $read_config['bind_pw'];
+        $this->read_config['bind_host'] = $read_config['bind_host'];
+
+        $this->write_config['base_dn'] = $write_config['base_dn'];
+        $this->write_config['bind_dn'] = $write_config['bind_dn'];
+        $this->write_config['bind_pw'] = $write_config['bind_pw'];
+        $this->write_config['bind_host'] = $write_config['bind_host'];
 
         parent::__construct('slapd');
     }
@@ -136,11 +144,11 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_write)
+            $this->_bind('write');
 
-        if (! ldap_add($this->connection, $dn, $attributes))
-            throw new Engine_Exception(ldap_error($this->connection));
+        if (! ldap_add($this->write_connection, $dn, $attributes))
+            throw new Engine_Exception(ldap_error($this->write_connection));
     }
 
     /**
@@ -158,11 +166,16 @@ class LDAP_Client extends Daemon
             $this->search_result = NULL;
         }
 
-        if (! is_null($this->connection))
-            ldap_close($this->connection);
+        if (! is_null($this->read_connection))
+            ldap_close($this->read_connection);
 
-        $this->connection = NULL;
-        $this->bound = FALSE;
+        if (! is_null($this->write_connection))
+            ldap_close($this->write_connection);
+
+        $this->read_connection = NULL;
+        $this->write_connection = NULL;
+        $this->bound_read = FALSE;
+        $this->bound_write = FALSE;
     }
 
     /**
@@ -178,10 +191,10 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_write)
+            $this->_bind('write');
 
-        if (! ldap_delete($this->connection, $dn))
+        if (! ldap_delete($this->write_connection, $dn))
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
     }
 
@@ -198,29 +211,15 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        $result = @ldap_read($this->connection, $dn, '(objectclass=*)');
+        $result = @ldap_read($this->read_connection, $dn, '(objectclass=*)');
 
         if (empty($result))
             return FALSE;
         else
             return TRUE;
-    }
-
-    /**
-     * Returns LDAP error.
-     *
-     * @return string LDAP error
-     * @throws Engine_Exception, LDAP_Offline_Exception
-     */
-
-    public function error()
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        return ldap_error($this->connection);
     }
 
     /**
@@ -236,57 +235,15 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        $attributes = ldap_get_attributes($this->connection, $entry);
+        $attributes = ldap_get_attributes($this->read_connection, $entry);
 
         if (! $attributes)
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
 
         return $attributes;
-    }
-
-    /** 
-     * Returns configured base DN.
-     *
-     * @return string base DN
-     * @throws Engine_Exception
-     */
-
-    public function get_base_dn()
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        return $this->config['base_dn'];
-    }
-
-    /** 
-     * Returns configured bind DN.
-     *
-     * @return string bind DN
-     * @throws Engine_Exception
-     */
-
-    public function get_bind_dn()
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        return $this->config['bind_dn'];
-    }
-
-    /** 
-     * Returns configured bind password.
-     *
-     * @return string bind password
-     * @throws Engine_Exception
-     */
-
-    public function get_bind_password()
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        return $this->config['bind_pw'];
     }
 
     /**
@@ -302,13 +259,13 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        $dn = ldap_get_dn($this->connection, $entry);
+        $dn = ldap_get_dn($this->read_connection, $entry);
 
         if (! $dn)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->read_connection));
 
         return $dn;
     }
@@ -324,13 +281,13 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        $entries = ldap_get_entries($this->connection, $this->search_result);
+        $entries = ldap_get_entries($this->read_connection, $this->search_result);
 
         if (! $entries)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->read_connection));
 
         return $entries;
     }
@@ -346,10 +303,10 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        $entry = ldap_first_entry($this->connection, $this->search_result);
+        $entry = ldap_first_entry($this->read_connection, $this->search_result);
 
         return $entry;
     }
@@ -365,7 +322,7 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        return $this->config['ldap_uri'];
+        return $this->read_config['ldap_uri'];
     }
 
     /** 
@@ -379,11 +336,11 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if ($this->bound)
+        if ($this->bound_read)
             return TRUE;
 
         try {
-            $this->_bind();
+            $this->_bind('read');
         } catch (LDAP_Offline_Exception $e) {
             return FALSE;
         }
@@ -405,13 +362,13 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_write)
+            $this->_bind('write');
 
-        $ok = ldap_modify($this->connection, $dn, $entry);
+        $ok = ldap_modify($this->write_connection, $dn, $entry);
 
         if (!$ok)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->write_connection));
     }
 
     /**
@@ -428,13 +385,13 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_write)
+            $this->_bind('write');
 
-        $ok = ldap_modify($this->connection, $dn, $entry);
+        $ok = ldap_modify($this->write_connection, $dn, $entry);
 
         if (!$ok)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->write_connection));
     }
 
     /**
@@ -450,10 +407,10 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        return ldap_next_entry($this->connection, $entry);
+        return ldap_next_entry($this->read_connection, $entry);
     }
 
     /**
@@ -469,25 +426,25 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        $result = @ldap_read($this->connection, $dn, '(objectclass=*)');
+        $result = @ldap_read($this->read_connection, $dn, '(objectclass=*)');
 
         if (!$result)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->read_connection));
 
-        $entry = ldap_first_entry($this->connection, $result);
+        $entry = ldap_first_entry($this->read_connection, $result);
 
         if (!$entry) {
             ldap_free_result($result);
             return;
         }
 
-        $ldap_object = ldap_get_attributes($this->connection, $entry);
+        $ldap_object = ldap_get_attributes($this->read_connection, $entry);
 
         if (! $ldap_object)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->read_connection));
 
         ldap_free_result($result);
 
@@ -509,14 +466,14 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_write)
+            $this->_bind('write');
 
         if (empty($new_parent))
-            $new_parent = $this->config['base_dn'];
+            $new_parent = $this->write_config['base_dn'];
 
-        if (! ldap_rename($this->connection, $dn, $rdn, $new_parent, TRUE))
-            throw new Engine_Exception(ldap_error($this->connection));
+        if (! ldap_rename($this->write_connection, $dn, $rdn, $new_parent, TRUE))
+            throw new Engine_Exception(ldap_error($this->write_connection));
     }
 
     /**
@@ -534,21 +491,21 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
         $this->_free_search_result();
 
         if (is_null($base_dn))
-            $base_dn = $this->config['base_dn'];
+            $base_dn = $this->read_config['base_dn'];
 
         if ($attributes == NULL)
-            $this->search_result = ldap_search($this->connection, $base_dn, $filter);
+            $this->search_result = ldap_search($this->read_connection, $base_dn, $filter);
         else
-            $this->search_result = ldap_search($this->connection, $base_dn, $filter, $attributes);
+            $this->search_result = ldap_search($this->read_connection, $base_dn, $filter, $attributes);
 
         if (! $this->search_result)
-            throw new Engine_Exception(ldap_error($this->connection));
+            throw new Engine_Exception(ldap_error($this->read_connection));
 
         return $this->search_result;
     }
@@ -567,10 +524,10 @@ class LDAP_Client extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (! $this->bound)
-            $this->_bind();
+        if (! $this->bound_read)
+            $this->_bind('read');
 
-        ldap_sort($this->connection, $result, $sort_filter);
+        ldap_sort($this->read_connection, $result, $sort_filter);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -643,27 +600,40 @@ class LDAP_Client extends Daemon
     /**
      * Loads default settings, connects and binds to LDAP server.
      *
+     * @param string $mode read or write mode
+     *
      * @return void
      * @throws Engine_Exception, LDAP_Offline_Exception
      */
 
-    protected function _bind()
+    protected function _bind($mode)
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $this->connection = ldap_connect('ldaps://' . $this->config['bind_host']);
+        if ($mode === 'read')
+            $config = $this->read_config;
+        else if ($mode === 'write')
+            $config = $this->write_config;
 
-        if (! ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3))
+        $connection = ldap_connect('ldaps://' . $config['bind_host']);
+
+        if (! ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3))
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
 
-        if (! @ldap_bind($this->connection, $this->config['bind_dn'], $this->config['bind_pw'])) {
-            if (ldap_errno($this->connection) === -1)
+        if (! @ldap_bind($connection, $config['bind_dn'], $config['bind_pw'])) {
+            if (ldap_errno($connection) === -1)
                 throw new LDAP_Offline_Exception();
             else
-                throw new Engine_Exception($this->error());
+                throw new Engine_Exception(ldap_error($connection));
         }
 
-        $this->bound = TRUE;
+        if ($mode === 'read') {
+            $this->bound_read = TRUE;
+            $this->read_connection = $connection;
+        } else if ($mode === 'write') {
+            $this->bound_write = TRUE;
+            $this->write_connection = $connection;
+        }
     }
 
     /**
