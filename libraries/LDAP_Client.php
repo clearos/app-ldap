@@ -615,7 +615,11 @@ class LDAP_Client extends Daemon
         else if ($mode === 'write')
             $config = $this->write_config;
 
-        $connection = ldap_connect('ldaps://' . $config['bind_host']);
+        // FIXME: ldaps has some weird flapping issue (reboot required?)
+        // It is only required when co-existing with Samba4, hence the temporary workaround below.
+        $ldap_conn_type = (file_exists('/usr/bin/samba-tool')) ? 'ldaps' : 'ldap';
+
+        $connection = ldap_connect($ldap_conn_type . '://' . $config['bind_host']);
 
         if (! ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3))
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
