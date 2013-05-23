@@ -11,14 +11,14 @@ require_once $bootstrap . '/bootstrap.php';
 // T R A N S L A T I O N S
 ///////////////////////////////////////////////////////////////////////////////
 
-clearos_load_language('accounts');
+clearos_load_language('ldap');
 
 ///////////////////////////////////////////////////////////////////////////////
 // C O N F I G L E T
 ///////////////////////////////////////////////////////////////////////////////
 
 $configlet = array(
-    'title' => lang('accounts_accounts_caching_server'),
+    'title' => lang('ldap_accounts_ldap_connector'),
     'package' => 'nss-pam-ldapd',
     'process_name' => 'nslcd',
     'pid_file' => '/var/run/nslcd/nslcd.pid',

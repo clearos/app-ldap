@@ -1,7 +1,7 @@
 
 Name: app-ldap
 Epoch: 1
-Version: 1.4.35
+Version: 1.4.36
 Release: 1%{dist}
 Summary: LDAP Engine - Core
 License: LGPLv3
@@ -40,8 +40,6 @@ install -D -m 0755 packaging/ldap-synchronize %{buildroot}/usr/sbin/ldap-synchro
 install -D -m 0644 packaging/nslcd.php %{buildroot}/var/clearos/base/daemon/nslcd.php
 install -D -m 0755 packaging/poststart-ldap %{buildroot}/usr/sbin/poststart-ldap
 install -D -m 0755 packaging/prestart-ldap %{buildroot}/usr/sbin/prestart-ldap
-
-rm -rf %{buildroot}/usr/clearos/apps/ldap/libraries_zendguard
 
 %post core
 logger -p local6.notice -t installer 'app-ldap-core - installing'
