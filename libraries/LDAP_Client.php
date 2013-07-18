@@ -372,23 +372,23 @@ class LDAP_Client extends Daemon
     }
 
     /**
-     * Modifies LDAP list of entries.
+     * Modifies LDAP attribute.
      *
-     * @param string $dn      distinguished name
-     * @param string $entries entries
+     * @param string $dn    distinguished name
+     * @param string $entry entry
      *
      * @return void
-     * @throws Engine_Exception
+     * @throws Engine_Exception, LDAP_Offline_Exception
      */
 
-    public function modify_members($dn, $entries)
+    public function modify_attribute($dn, $attribute)
     {
         clearos_profile(__METHOD__, __LINE__);
 
         if (! $this->bound_write)
             $this->_bind('write');
 
-        $ok = ldap_modify($this->write_connection, $dn, $entry);
+        $ok = ldap_mod_replace($this->write_connection, $dn, $attribute);
 
         if (!$ok)
             throw new Engine_Exception(ldap_error($this->write_connection));
