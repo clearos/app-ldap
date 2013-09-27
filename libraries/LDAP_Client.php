@@ -113,21 +113,25 @@ class LDAP_Client extends Daemon
      * @param string $bind_host Bind host
      */
 
-    public function __construct($read_config, $write_config)
+    public function __construct($read_config, $write_config, $daemon = 'slapd')
     {
         clearos_profile(__METHOD__, __LINE__);
 
+        $this->read_config['protocol'] = (isset($read_config['protocol'])) ? $read_config['protocol'] : 'ldap';
+        $this->read_config['referrals'] = (isset($read_config['referrals'])) ? $read_config['referrals'] : TRUE;
         $this->read_config['base_dn'] = $read_config['base_dn'];
         $this->read_config['bind_dn'] = $read_config['bind_dn'];
         $this->read_config['bind_pw'] = $read_config['bind_pw'];
         $this->read_config['bind_host'] = $read_config['bind_host'];
 
+        $this->write_config['protocol'] = (isset($write_config['protocol'])) ? $write_config['protocol'] : 'ldap';
+        $this->write_config['referrals'] = (isset($write_config['referrals'])) ? $write_config['referrals'] : TRUE;
         $this->write_config['base_dn'] = $write_config['base_dn'];
         $this->write_config['bind_dn'] = $write_config['bind_dn'];
         $this->write_config['bind_pw'] = $write_config['bind_pw'];
         $this->write_config['bind_host'] = $write_config['bind_host'];
 
-        parent::__construct('slapd');
+        parent::__construct($daemon);
     }
 
     /**
@@ -615,11 +619,10 @@ class LDAP_Client extends Daemon
         else if ($mode === 'write')
             $config = $this->write_config;
 
-        // FIXME: ldaps has some weird flapping issue (reboot required?)
-        // It is only required when co-existing with Samba4, hence the temporary workaround below.
-        $ldap_conn_type = (file_exists('/usr/bin/samba-tool')) ? 'ldaps' : 'ldap';
+        $connection = ldap_connect($config['protocol'] . '://' . $config['bind_host']);
 
-        $connection = ldap_connect($ldap_conn_type . '://' . $config['bind_host']);
+        if ($config['referrals'] === FALSE)
+            ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
 
         if (! ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3))
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
