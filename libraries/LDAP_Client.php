@@ -353,6 +353,29 @@ class LDAP_Client extends Daemon
     }
 
     /**
+     * Checks LDAP write availability.
+     *
+     * @return boolean TRUE if LDAP write connection was successful
+     * @throws Engine_Exception, LDAP_Offline_Exception
+     */
+
+    public function is_writable()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if ($this->bound_write)
+            return TRUE;
+
+        try {
+            $this->_bind('write');
+        } catch (LDAP_Offline_Exception $e) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    /**
      * Modifies LDAP entry.
      *
      * @param string $dn    distinguished name
