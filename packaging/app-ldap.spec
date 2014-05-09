@@ -1,7 +1,7 @@
 
 Name: app-ldap
 Epoch: 1
-Version: 1.5.10
+Version: 1.6.0
 Release: 1%{dist}
 Summary: LDAP Engine - Core
 License: LGPLv3
@@ -63,7 +63,6 @@ exit 0
 %files core
 %defattr(-,root,root)
 %exclude /usr/clearos/apps/ldap/packaging
-%exclude /usr/clearos/apps/ldap/tests
 %dir /usr/clearos/apps/ldap
 %dir /var/clearos/ldap
 %dir /var/clearos/ldap/synchronize
