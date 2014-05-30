@@ -26,3 +26,4 @@ $lang['ldap_capabilities'] = 'Capabilities';
 $lang['ldap_mode'] = 'Mode';
 $lang['ldap_computers'] = 'Computers';
 $lang['ldap_accounts_ldap_connector'] = 'Accounts LDAP Connector';
+$lang['ldap_all_networks'] = 'All Networks';

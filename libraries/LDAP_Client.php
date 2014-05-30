@@ -650,11 +650,23 @@ class LDAP_Client extends Daemon
         if (! ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3))
             throw new Engine_Exception(lang('ldap_ldap_operation_failed'));
 
-        if (! @ldap_bind($connection, $config['bind_dn'], $config['bind_pw'])) {
-            if (ldap_errno($connection) === -1)
-                throw new LDAP_Offline_Exception();
-            else
-                throw new Engine_Exception(ldap_error($connection));
+        $retry = 0;
+        $max_retry = 5;
+
+        while ($retry <= $max_retry) {
+            if (@ldap_bind($connection, $config['bind_dn'], $config['bind_pw'])) {
+                break;
+            } else {
+                $retry++;
+                sleep(1);;
+                echo "dude - $retry\n";
+                if ($retry >= $max_retry) {
+                    if (ldap_errno($connection) === -1)
+                        throw new LDAP_Offline_Exception();
+                    else
+                        throw new Engine_Exception(ldap_error($connection));
+                }
+            }
         }
 
         if ($mode === 'read') {
