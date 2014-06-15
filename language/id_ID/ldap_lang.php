@@ -3,10 +3,10 @@
 // http://www.clearfoundation.com/docs/developer/translations/
 
 $lang['ldap_accounts_ldap_connector'] = 'Accounts LDAP Connector';
+$lang['ldap_all_networks'] = 'All Networks';
 $lang['ldap_app_description'] = 'The LDAP Engine provides a common framework for all the available LDAP implementations including OpenLDAP and Active Directory.';
 $lang['ldap_app_name'] = 'LDAP Engine';
 $lang['ldap_base_dn'] = 'Base DN';
-$lang['ldap_base_domain'] = 'Base Domain';
 $lang['ldap_base_domain'] = 'Base Domain';
 $lang['ldap_bind_dn'] = 'Bind DN';
 $lang['ldap_bind_password'] = 'Bind Password';
