@@ -659,7 +659,6 @@ class LDAP_Client extends Daemon
             } else {
                 $retry++;
                 sleep(1);;
-                echo "dude - $retry\n";
                 if ($retry >= $max_retry) {
                     if (ldap_errno($connection) === -1)
                         throw new LDAP_Offline_Exception();
