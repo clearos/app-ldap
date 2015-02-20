@@ -1,4 +1,7 @@
 #!/bin/sh
 
+# Fix potential permission problems in /var/lib/ldap
+chown -R ldap.ldap /var/lib/ldap
+
 # Initialize LDAP
 [ -x /usr/sbin/ldap-synchronize ] && /usr/sbin/ldap-synchronize >/dev/null 2>&1
