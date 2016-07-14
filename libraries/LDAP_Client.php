@@ -135,6 +135,16 @@ class LDAP_Client extends Daemon
     }
 
     /**
+     * Performs LDAP close.
+     *
+     * @return void
+     */
+
+    public function __destruct() {
+        $this->close();
+    }
+
+    /**
      * Performs LDAP add.
      *
      * @param string $dn         distinguished name
