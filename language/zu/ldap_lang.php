@@ -1,0 +1,32 @@
+<?php
+
+$lang['ldap_accounts_ldap_connector'] = 'Thenga ama-akhawunti LDAP Isixhumi';
+$lang['ldap_all_networks'] = 'Zonke Networks';
+$lang['ldap_app_description'] = 'The Engine uHlelo ihlinzeka ngohlaka ovamile for wonke kuyatholakala LDAP usebenzise kuhlanganise OpenLDAP kanye Directory Active.';
+$lang['ldap_app_name'] = 'uHlelo Engine';
+$lang['ldap_base_dn'] = 'Base DN';
+$lang['ldap_base_domain'] = 'Base Domain';
+$lang['ldap_bind_dn'] = 'hlanganisa DN';
+$lang['ldap_bind_password'] = 'hlanganisa Iphasiwedi';
+$lang['ldap_capabilities'] = 'amakhono';
+$lang['ldap_computers'] = 'Ezamakhompiyutha';
+$lang['ldap_connection_information'] = 'Ulwazi Connection';
+$lang['ldap_containers'] = 'Iziqukathi';
+$lang['ldap_directory_information'] = 'Directory Information';
+$lang['ldap_directory_status'] = 'Isimo Directory';
+$lang['ldap_domain_invalid'] = 'Domain ayivumelekile.';
+$lang['ldap_importing_data'] = 'Lokungenisa idatha.';
+$lang['ldap_ldap_is_offline'] = 'UHlelo kwi-intanethi.';
+$lang['ldap_ldap_operation_failed'] = 'operation LDAP kuhlulekile.';
+$lang['ldap_local_network'] = 'Network Local';
+$lang['ldap_master_hostname_invalid'] = 'Master lomethuleli ayivumelekile.';
+$lang['ldap_master'] = 'Master';
+$lang['ldap_mode_invalid'] = 'Mode ayivumelekile.';
+$lang['ldap_mode'] = 'Mode';
+$lang['ldap_not_published'] = 'Not Kushicilelwe';
+$lang['ldap_preparing_import'] = 'Ilungiselela ukungenisa.';
+$lang['ldap_publish_policy'] = 'Ukushicilela yemfihlo';
+$lang['ldap_security_policy_invalid'] = 'inqubomgomo Security ayivumelekile.';
+$lang['ldap_shutting_down_ldap_server'] = 'Ivala shaqa iseva LDAP.';
+$lang['ldap_slave'] = 'Slave';
+$lang['ldap_standalone'] = 'standalone';
